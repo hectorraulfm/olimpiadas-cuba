@@ -11,8 +11,8 @@
 //  NUNCA pongas aquí la clave "service_role".
 // ---------------------------------------------------------------------------
 
-export const SUPABASE_URL = "PON_AQUI_TU_PROJECT_URL";
-export const SUPABASE_ANON_KEY = "PON_AQUI_TU_ANON_KEY";
+export const SUPABASE_URL = "https://wtvibkumesmopmauntnt.supabase.co";
+export const SUPABASE_ANON_KEY = "sb_publishable__cxlKRM1XiUjJ3DO5Pd03g_CQrwDo7T";
 
 // Título y textos del sitio (cámbialos a tu gusto).
 export const SITE = {
