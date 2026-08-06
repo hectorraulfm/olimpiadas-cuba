@@ -95,15 +95,22 @@ contraseña. Entrarás como `admin` y verás el botón **Administración**.
 
 ### Ver la tabla
 
-Es pública, no hace falta cuenta. Se puede buscar por concursante, país o líder,
-filtrar por medalla, ordenar por año y exportar todo a CSV.
+Es pública, no hace falta cuenta. Sale entera, del año más reciente al más
+antiguo, y se puede exportar a CSV.
 
 ### Rellenar datos (rol `editor` o `admin`)
 
-- **+ Nueva edición** crea un año: país organizador, sede, líder y colíder.
-- El botón **✎** junto al año edita esos datos de la edición.
 - El botón **+** junto al año añade un concursante (normalmente 4 por año).
 - El botón **✎** al final de cada fila edita ese concursante.
+
+### Ediciones (solo `admin`)
+
+Los editores no pueden tocar el año, el país organizador, la sede ni los
+líderes; esos botones solo los ve un `admin`, y la base de datos rechaza el
+cambio aunque alguien lo intente por su cuenta.
+
+- **+ Nueva edición** crea un año: país organizador, sede, líder y colíder.
+- El botón **✎** junto al año edita esos datos de la edición.
 
 Todo campo puede quedarse vacío: la idea es ir completando poco a poco.
 Los puntos totales se calculan solos al escribir P1–P6, pero puedes
@@ -129,7 +136,7 @@ propia base de datos.
 | Rol | Puede |
 |---|---|
 | `admin` | Todo: datos, usuarios, invitaciones, historial y borrar ediciones |
-| `editor` | Crear y modificar ediciones y concursantes; borrar filas de concursantes |
+| `editor` | Añadir, modificar y borrar filas de concursantes (nombre, resultado, puntos) |
 | `viewer` | Solo lectura (igual que una visita anónima) |
 
 ### Historial
@@ -151,7 +158,7 @@ ibero-cuba/
 │   └── js/
 │       ├── config.js          <- tus claves de Supabase
 │       ├── supabase-client.js
-│       ├── app.js             Tabla, filtros, formularios, CSV
+│       ├── app.js             Tabla, formularios, CSV
 │       └── admin.js           Usuarios, invitaciones, historial
 ├── supabase/
 │   ├── schema.sql          Tablas, roles, RLS, triggers e historial

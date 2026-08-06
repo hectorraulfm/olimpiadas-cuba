@@ -266,6 +266,8 @@ table.results tbody.edition + tbody.edition td { border-top: 2px solid var(--bor
 .host { display: flex; flex-direction: column; gap: 1px; }
 .host .city { font-size: 12px; color: var(--text-dim); }
 
+.group-actions { margin-top: 6px; display: flex; gap: 2px; }
+
 .total { font-weight: 650; }
 .p-zero { color: var(--text-dim); }
 .muted { color: var(--text-dim); }

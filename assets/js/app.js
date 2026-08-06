@@ -167,52 +167,26 @@ async function loadData() {
 }
 
 // ---------------------------------------------------------------------------
-// Filtrado y render de la tabla
+// Render de la tabla
 // ---------------------------------------------------------------------------
 
-function filteredGroups() {
-  const q = $("search").value.trim().toLowerCase();
-  const award = $("filter-award").value;
-  const asc = $("sort-order").value === "asc";
-
+/** Ediciones de más reciente a más antigua, cada una con sus concursantes. */
+function orderedGroups() {
   const byYear = new Map();
   for (const row of state.results) {
     if (!byYear.has(row.year)) byYear.set(row.year, []);
     byYear.get(row.year).push(row);
   }
 
-  const editions = [...state.editions].sort((a, b) =>
-    asc ? a.year - b.year : b.year - a.year);
-
-  const groups = [];
-  for (const edition of editions) {
-    const editionText = [
-      edition.year, edition.host_country, edition.host_city,
-      edition.leader, edition.deputy_leader, edition.notes,
-    ].join(" ").toLowerCase();
-    const editionMatches = !q || editionText.includes(q);
-
-    let rows = (byYear.get(edition.year) ?? [])
-      .slice()
-      .sort((a, b) => (a.sort_order - b.sort_order) ||
-                      (a.contestant ?? "").localeCompare(b.contestant ?? "", "es"));
-
-    if (q && !editionMatches) {
-      rows = rows.filter((r) =>
-        `${r.contestant ?? ""} ${r.notes ?? ""}`.toLowerCase().includes(q));
-    }
-    if (award === "__none") {
-      rows = rows.filter((r) => !r.award);
-    } else if (award) {
-      rows = rows.filter((r) => r.award === award);
-    }
-
-    const filtering = Boolean(q) || Boolean(award);
-    if (rows.length || (!filtering && editionMatches)) {
-      groups.push({ edition, rows });
-    }
-  }
-  return groups;
+  return [...state.editions]
+    .sort((a, b) => b.year - a.year)
+    .map((edition) => ({
+      edition,
+      rows: (byYear.get(edition.year) ?? [])
+        .slice()
+        .sort((a, b) => (a.sort_order - b.sort_order) ||
+                        (a.contestant ?? "").localeCompare(b.contestant ?? "", "es")),
+    }));
 }
 
 function awardCell(award) {
@@ -251,25 +225,25 @@ function render() {
   const table = document.querySelector("table.results");
   const colCount = editing ? 14 : 13;
 
+  // Crear y editar ediciones es cosa del admin; los editores solo rellenan
+  // concursantes y puntos.
   $("th-actions").hidden = !editing;
-  $("btn-new-edition").hidden = !editing;
+  $("btn-new-edition").hidden = !isAdmin();
 
   // Reconstruye todos los <tbody> de datos.
   table.querySelectorAll("tbody").forEach((tb) => tb.remove());
 
-  const groups = filteredGroups();
+  const groups = orderedGroups();
 
   if (!groups.length) {
     const tb = document.createElement("tbody");
     let message;
-    if (state.editions.length) {
-      message = "Ningún resultado coincide con el filtro.";
-    } else if (!isConfigured) {
+    if (!isConfigured) {
       message = "Configura Supabase para ver los datos.";
+    } else if (isAdmin()) {
+      message = "Todavía no hay ediciones. Empieza con «+ Nueva edición».";
     } else {
-      message = editing
-        ? "Todavía no hay ediciones. Empieza con «+ Nueva edición»."
-        : "Todavía no hay ediciones registradas.";
+      message = "Todavía no hay ediciones registradas.";
     }
     tb.innerHTML = `<tr><td colspan="${colCount}" class="empty-state">${message}</td></tr>`;
     table.appendChild(tb);
@@ -283,9 +257,9 @@ function render() {
     const span = Math.max(rows.length, 1);
 
     const groupControls = editing ? `
-      <div style="margin-top:6px;display:flex;gap:2px">
-        <button class="btn-icon" data-edit-edition="${edition.year}"
-                title="Editar edición ${edition.year}">✎</button>
+      <div class="group-actions">
+        ${isAdmin() ? `<button class="btn-icon" data-edit-edition="${edition.year}"
+                title="Editar edición ${edition.year}">✎</button>` : ""}
         <button class="btn-icon" data-add-result="${edition.year}"
                 title="Añadir concursante a ${edition.year}">+</button>
       </div>` : "";
@@ -513,7 +487,7 @@ function exportCsv() {
                 "Puntos", "P1", "P2", "P3", "P4", "P5", "P6", "Líder", "Colíder"];
   const lines = [head];
 
-  for (const { edition, rows } of filteredGroups()) {
+  for (const { edition, rows } of orderedGroups()) {
     const base = [edition.year, edition.host_country, edition.host_city];
     const tail = [edition.leader, edition.deputy_leader];
     if (!rows.length) {
@@ -577,14 +551,6 @@ function wireEvents() {
 
   $("btn-new-edition").onclick = () => openEditionDialog(null);
   $("btn-export").onclick = exportCsv;
-
-  let searchTimer;
-  $("search").addEventListener("input", () => {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(render, 150);
-  });
-  $("filter-award").addEventListener("change", render);
-  $("sort-order").addEventListener("change", render);
 
   // Delegación de clics dentro de la tabla.
   document.querySelector("table.results").addEventListener("click", (event) => {

@@ -261,18 +261,20 @@ drop policy if exists invitations_all on public.invitations;
 create policy invitations_all on public.invitations
   for all using (public.is_admin()) with check (public.is_admin());
 
--- editions: lectura pública; escritura de editores; borrado solo del admin.
+-- editions: lectura pública; crear, modificar y borrar, solo el admin.
+-- Los editores no tocan el año, el país, la sede ni los líderes: se limitan a
+-- rellenar concursantes y puntos en la tabla results.
 drop policy if exists editions_select on public.editions;
 create policy editions_select on public.editions
   for select using (true);
 
 drop policy if exists editions_insert on public.editions;
 create policy editions_insert on public.editions
-  for insert with check (public.is_editor());
+  for insert with check (public.is_admin());
 
 drop policy if exists editions_update on public.editions;
 create policy editions_update on public.editions
-  for update using (public.is_editor()) with check (public.is_editor());
+  for update using (public.is_admin()) with check (public.is_admin());
 
 drop policy if exists editions_delete on public.editions;
 create policy editions_delete on public.editions
