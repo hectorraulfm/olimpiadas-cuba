@@ -207,8 +207,10 @@ function textCell(value) {
 function renderStats() {
   const count = (award) => state.results.filter((r) => r.award === award).length;
 
-  // Las filas en blanco son huecos por rellenar, no participaciones reales.
-  const named = state.results.filter((r) => (r.contestant ?? "").trim() !== "");
+  // Solo las filas del todo vacías son huecos; si hay nombre o resultado,
+  // cuenta como participación aunque falte el otro dato.
+  const named = state.results.filter(
+    (r) => (r.contestant ?? "").trim() !== "" || r.award);
 
   $("s-editions").textContent = state.editions.length;
   $("s-contestants").textContent = named.length;

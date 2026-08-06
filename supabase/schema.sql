@@ -58,13 +58,15 @@ create table if not exists public.results (
   id          uuid primary key default gen_random_uuid(),
   year        int not null references public.editions (year) on delete cascade,
   contestant  text not null default '',
-  p1          smallint check (p1 between 0 and 7),
-  p2          smallint check (p2 between 0 and 7),
-  p3          smallint check (p3 between 0 and 7),
-  p4          smallint check (p4 between 0 and 7),
-  p5          smallint check (p5 between 0 and 7),
-  p6          smallint check (p6 between 0 and 7),
-  total       smallint check (total between 0 and 42),
+  -- Hoy cada problema vale 7 puntos (máximo 42), pero las primeras ediciones
+  -- puntuaban sobre 10 (máximo 60), así que el límite es 10.
+  p1          smallint check (p1 between 0 and 10),
+  p2          smallint check (p2 between 0 and 10),
+  p3          smallint check (p3 between 0 and 10),
+  p4          smallint check (p4 between 0 and 10),
+  p5          smallint check (p5 between 0 and 10),
+  p6          smallint check (p6 between 0 and 10),
+  total       smallint check (total between 0 and 60),
   award       text check (award in ('Oro', 'Plata', 'Bronce',
                                     'Mención de Honor', 'Participación')),
   rank        int,          -- puesto individual (opcional, no se muestra aún)

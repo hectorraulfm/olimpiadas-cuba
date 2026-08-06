@@ -84,7 +84,10 @@
     así que pueden contener errores o huecos: si detectas algo, escribe al
     administrador para pedir permiso de edición.
   </p>
-  <p>Escala: 6 problemas, 7 puntos cada uno, máximo 42.</p>
+  <p>
+    Escala: 6 problemas, 7 puntos cada uno, máximo 42. En las primeras
+    ediciones cada problema valía 10 puntos, con un máximo de 60.
+  </p>
 </footer>
 
 <!-- ===================== Modal: acceso ===================== -->
@@ -193,20 +196,20 @@
         </div>
       </div>
       <div class="field">
-        <label>Puntos por problema <span class="muted">(0 a 7, deja en blanco si no se conoce)</span></label>
+        <label>Puntos por problema <span class="muted">(deja en blanco si no se conoce)</span></label>
         <div class="grid-6">
-          <input type="number" id="rs-p1" min="0" max="7" step="1" placeholder="P1" aria-label="P1">
-          <input type="number" id="rs-p2" min="0" max="7" step="1" placeholder="P2" aria-label="P2">
-          <input type="number" id="rs-p3" min="0" max="7" step="1" placeholder="P3" aria-label="P3">
-          <input type="number" id="rs-p4" min="0" max="7" step="1" placeholder="P4" aria-label="P4">
-          <input type="number" id="rs-p5" min="0" max="7" step="1" placeholder="P5" aria-label="P5">
-          <input type="number" id="rs-p6" min="0" max="7" step="1" placeholder="P6" aria-label="P6">
+          <input type="number" id="rs-p1" min="0" max="10" step="1" placeholder="P1" aria-label="P1">
+          <input type="number" id="rs-p2" min="0" max="10" step="1" placeholder="P2" aria-label="P2">
+          <input type="number" id="rs-p3" min="0" max="10" step="1" placeholder="P3" aria-label="P3">
+          <input type="number" id="rs-p4" min="0" max="10" step="1" placeholder="P4" aria-label="P4">
+          <input type="number" id="rs-p5" min="0" max="10" step="1" placeholder="P5" aria-label="P5">
+          <input type="number" id="rs-p6" min="0" max="10" step="1" placeholder="P6" aria-label="P6">
         </div>
       </div>
       <div class="grid-2">
         <div class="field">
           <label for="rs-total">Puntos totales</label>
-          <input type="number" id="rs-total" min="0" max="42" step="1">
+          <input type="number" id="rs-total" min="0" max="60" step="1">
           <p class="hint">Se calcula solo al rellenar los problemas; puedes corregirlo a mano.</p>
         </div>
         <div class="field">

@@ -162,7 +162,8 @@ ibero-cuba/
 │       └── admin.js           Usuarios, invitaciones, historial
 ├── supabase/
 │   ├── schema.sql          Tablas, roles, RLS, triggers e historial
-│   └── seed-ediciones.sql  Esqueleto: 1985–2025, 4 filas por año
+│   ├── seed-ediciones.sql  Esqueleto: 1985–2025, 4 filas por año
+│   └── import-2026-08.sql  Sedes 1987–2024 y 53 concursantes cubanos
 └── dev-server.ps1          Servidor local para pruebas (Windows)
 ```
 
@@ -192,7 +193,19 @@ concursante, para ver de un vistazo cuánto queda por completar.
 - Ficha por concursante con todas sus participaciones.
 - Botón de deshacer en el historial, aprovechando el `old_data` guardado.
 
+## Sobre la escala de puntuación
+
+Hoy cada uno de los 6 problemas vale 7 puntos, con un máximo de 42. Las primeras
+ediciones (al menos 1987 y 1993) puntuaban sobre 10, con un máximo de 60. Por eso
+la base de datos admite hasta 10 por problema y 60 de total.
+
 ## Aviso sobre los datos
 
 Los datos los aportan personas voluntarias y pueden contener errores o huecos.
 No es una fuente oficial.
+
+La importación de agosto de 2026 (`supabase/import-2026-08.sql`) procede de
+<https://iberoofficial.vercel.app>, que tampoco es la fuente oficial y está
+incompleta: documenta ediciones desde 1987 y no recoge concursantes de todos los
+años en los que Cuba participó. Los huecos que quedan en la tabla no significan
+que Cuba no participara, sino que faltan los datos.
