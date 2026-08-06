@@ -26,6 +26,15 @@ pueden modificarla, y cada cambio queda registrado con autor y fecha.
    [`supabase/schema.sql`](supabase/schema.sql) y pulsa **Run**.
    Debe terminar con «Success. No rows returned».
 
+4. *(Opcional pero recomendado)* En otra query, pega
+   [`supabase/seed-ediciones.sql`](supabase/seed-ediciones.sql) y pulsa **Run**:
+   crea el esqueleto completo, una edición por año de **1985 a 2025** con
+   **4 filas de concursante** en cada una (41 ediciones, 164 filas), todo en
+   blanco y listo para ir rellenando.
+
+   > Da por hecho que hubo participación cubana todos los años. Si algún año no
+   > la hubo, borra esa edición desde la web (solo `admin`).
+
 ### 2. Darte de alta como administrador
 
 En el mismo **SQL Editor**, ejecuta esto cambiando el correo por el tuyo:
@@ -144,7 +153,9 @@ ibero-cuba/
 │       ├── supabase-client.js
 │       ├── app.js             Tabla, filtros, formularios, CSV
 │       └── admin.js           Usuarios, invitaciones, historial
-├── supabase/schema.sql     Tablas, roles, RLS, triggers e historial
+├── supabase/
+│   ├── schema.sql          Tablas, roles, RLS, triggers e historial
+│   └── seed-ediciones.sql  Esqueleto: 1985–2025, 4 filas por año
 └── dev-server.ps1          Servidor local para pruebas (Windows)
 ```
 
@@ -163,9 +174,12 @@ Y abre <http://localhost:8765>. Si tienes Python en el PATH, vale igual:
 python -m http.server 8000
 ```
 
+El contador **Por rellenar** del resumen indica cuántas filas siguen sin
+concursante, para ver de un vistazo cuánto queda por completar.
+
 ## Ideas para más adelante
 
-- Precargar la lista de ediciones (año, país y sede) de todas las Iberoamericanas.
+- Rellenar el país organizador y la sede de cada año a partir de fuentes públicas.
 - Columna de puesto individual: el campo `rank` ya existe en la tabla `results`,
   solo falta mostrarlo.
 - Ficha por concursante con todas sus participaciones.

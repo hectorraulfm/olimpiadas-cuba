@@ -195,11 +195,11 @@ function filteredGroups() {
     let rows = (byYear.get(edition.year) ?? [])
       .slice()
       .sort((a, b) => (a.sort_order - b.sort_order) ||
-                      a.contestant.localeCompare(b.contestant, "es"));
+                      (a.contestant ?? "").localeCompare(b.contestant ?? "", "es"));
 
     if (q && !editionMatches) {
       rows = rows.filter((r) =>
-        `${r.contestant} ${r.notes}`.toLowerCase().includes(q));
+        `${r.contestant ?? ""} ${r.notes ?? ""}`.toLowerCase().includes(q));
     }
     if (award === "__none") {
       rows = rows.filter((r) => !r.award);
@@ -232,8 +232,13 @@ function textCell(value) {
 
 function renderStats() {
   const count = (award) => state.results.filter((r) => r.award === award).length;
+
+  // Las filas en blanco son huecos por rellenar, no participaciones reales.
+  const named = state.results.filter((r) => (r.contestant ?? "").trim() !== "");
+
   $("s-editions").textContent = state.editions.length;
-  $("s-contestants").textContent = state.results.length;
+  $("s-contestants").textContent = named.length;
+  $("s-todo").textContent = state.results.length - named.length;
   $("s-gold").textContent = count("Oro");
   $("s-silver").textContent = count("Plata");
   $("s-bronze").textContent = count("Bronce");
