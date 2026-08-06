@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuba en la Olimpiada Iberoamericana de Matemática</title>
+<meta name="description" content="Resultados históricos de Cuba en la Olimpiada Iberoamericana de Matemática: concursantes, medallas y puntuación por problema.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇨🇺</text></svg>">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="flag">🇨🇺</span>
+      <div>
+        <h1 id="site-title">Cuba en la Olimpiada Iberoamericana de Matemática</h1>
+        <p>Resultados individuales por año</p>
+      </div>
+    </div>
+    <div class="topbar-actions" id="auth-area">
+      <button class="btn" id="btn-login">Entrar</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div id="setup-banner" hidden class="banner warn">
+    <strong>Falta configurar Supabase.</strong>
+    Abre <code>assets/js/config.js</code> y pon la <em>Project URL</em> y la
+    <em>anon key</em> de tu proyecto. Las instrucciones completas están en el
+    <code>README.md</code>.
+  </div>
+
+  <p class="intro" id="site-intro"></p>
+
+  <section class="stats" id="stats" hidden>
+    <div class="stat"><b id="s-editions">–</b><span>Ediciones</span></div>
+    <div class="stat"><b id="s-contestants">–</b><span>Participaciones</span></div>
+    <div class="stat gold"><b id="s-gold">–</b><span>Oro</span></div>
+    <div class="stat silver"><b id="s-silver">–</b><span>Plata</span></div>
+    <div class="stat bronze"><b id="s-bronze">–</b><span>Bronce</span></div>
+    <div class="stat hm"><b id="s-hm">–</b><span>Mención</span></div>
+  </section>
+
+  <div class="toolbar">
+    <input type="search" id="search" placeholder="Buscar concursante, país, líder…" aria-label="Buscar">
+    <select id="filter-award" aria-label="Filtrar por resultado">
+      <option value="">Todos los resultados</option>
+      <option>Oro</option>
+      <option>Plata</option>
+      <option>Bronce</option>
+      <option>Mención de Honor</option>
+      <option>Participación</option>
+      <option value="__none">Sin resultado registrado</option>
+    </select>
+    <select id="sort-order" aria-label="Orden">
+      <option value="desc">Año: más reciente primero</option>
+      <option value="asc">Año: más antiguo primero</option>
+    </select>
+    <div class="spacer"></div>
+    <button class="btn" id="btn-export">Exportar CSV</button>
+    <button class="btn btn-primary" id="btn-new-edition" hidden>+ Nueva edición</button>
+  </div>
+
+  <div class="table-wrap">
+    <table class="results">
+      <thead>
+        <tr>
+          <th>Año</th>
+          <th>País organizador</th>
+          <th>Concursante</th>
+          <th>Resultado</th>
+          <th class="num">Puntos</th>
+          <th class="num">P1</th>
+          <th class="num">P2</th>
+          <th class="num">P3</th>
+          <th class="num">P4</th>
+          <th class="num">P5</th>
+          <th class="num">P6</th>
+          <th>Líder</th>
+          <th>Colíder</th>
+          <th class="row-actions" id="th-actions" hidden></th>
+        </tr>
+      </thead>
+      <tbody id="tbody-loading">
+        <tr><td colspan="14" class="empty-state">Cargando…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer>
+  <p>
+    Proyecto abierto y colaborativo. Los datos los aportan personas voluntarias,
+    así que pueden contener errores o huecos: si detectas algo, escribe al
+    administrador para pedir permiso de edición.
+  </p>
+  <p>Escala: 6 problemas, 7 puntos cada uno, máximo 42.</p>
+</footer>
+
+<!-- ===================== Modal: acceso ===================== -->
+<dialog id="dlg-auth">
+  <form method="dialog" id="form-auth">
+    <div class="dialog-head">
+      <h2 id="auth-title">Entrar</h2>
+      <button type="button" class="btn-icon" data-close aria-label="Cerrar">×</button>
+    </div>
+    <div class="dialog-body">
+      <p class="form-msg" id="auth-msg"></p>
+      <div class="field" id="field-name" hidden>
+        <label for="auth-name">Nombre y apellidos</label>
+        <input type="text" id="auth-name" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="auth-email">Correo electrónico</label>
+        <input type="email" id="auth-email" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="auth-pass">Contraseña</label>
+        <input type="password" id="auth-pass" required minlength="6" autocomplete="current-password">
+        <p class="hint" id="auth-hint">
+          ¿No tienes cuenta? Solo pueden registrarse los correos invitados por el
+          administrador.
+        </p>
+      </div>
+    </div>
+    <div class="dialog-foot">
+      <button type="button" class="btn" id="btn-toggle-mode">Crear cuenta</button>
+      <button type="submit" class="btn btn-primary" id="btn-auth-submit">Entrar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ===================== Modal: edición (año) ===================== -->
+<dialog id="dlg-edition">
+  <form method="dialog" id="form-edition">
+    <div class="dialog-head">
+      <h2 id="edition-title">Nueva edición</h2>
+      <button type="button" class="btn-icon" data-close aria-label="Cerrar">×</button>
+    </div>
+    <div class="dialog-body">
+      <p class="form-msg" id="edition-msg"></p>
+      <div class="grid-2">
+        <div class="field">
+          <label for="ed-year">Año</label>
+          <input type="number" id="ed-year" required min="1985" max="2100" step="1">
+        </div>
+        <div class="field">
+          <label for="ed-country">País organizador</label>
+          <input type="text" id="ed-country" list="paises" autocomplete="off">
+        </div>
+      </div>
+      <div class="field">
+        <label for="ed-city">Sede / ciudad <span class="muted">(opcional)</span></label>
+        <input type="text" id="ed-city" autocomplete="off">
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="ed-leader">Líder</label>
+          <input type="text" id="ed-leader" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="ed-deputy">Colíder</label>
+          <input type="text" id="ed-deputy" autocomplete="off">
+        </div>
+      </div>
+      <div class="field">
+        <label for="ed-notes">Notas <span class="muted">(opcional)</span></label>
+        <textarea id="ed-notes" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="dialog-foot">
+      <button type="button" class="btn btn-danger" id="btn-delete-edition" hidden>Eliminar edición</button>
+      <button type="button" class="btn" data-close>Cancelar</button>
+      <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ===================== Modal: concursante ===================== -->
+<dialog id="dlg-result">
+  <form method="dialog" id="form-result">
+    <div class="dialog-head">
+      <h2 id="result-title">Concursante</h2>
+      <button type="button" class="btn-icon" data-close aria-label="Cerrar">×</button>
+    </div>
+    <div class="dialog-body">
+      <p class="form-msg" id="result-msg"></p>
+      <div class="grid-2">
+        <div class="field">
+          <label for="rs-name">Concursante</label>
+          <input type="text" id="rs-name" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="rs-award">Resultado</label>
+          <select id="rs-award">
+            <option value="">— sin registrar —</option>
+            <option>Oro</option>
+            <option>Plata</option>
+            <option>Bronce</option>
+            <option>Mención de Honor</option>
+            <option>Participación</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Puntos por problema <span class="muted">(0 a 7, deja en blanco si no se conoce)</span></label>
+        <div class="grid-6">
+          <input type="number" id="rs-p1" min="0" max="7" step="1" placeholder="P1" aria-label="P1">
+          <input type="number" id="rs-p2" min="0" max="7" step="1" placeholder="P2" aria-label="P2">
+          <input type="number" id="rs-p3" min="0" max="7" step="1" placeholder="P3" aria-label="P3">
+          <input type="number" id="rs-p4" min="0" max="7" step="1" placeholder="P4" aria-label="P4">
+          <input type="number" id="rs-p5" min="0" max="7" step="1" placeholder="P5" aria-label="P5">
+          <input type="number" id="rs-p6" min="0" max="7" step="1" placeholder="P6" aria-label="P6">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="rs-total">Puntos totales</label>
+          <input type="number" id="rs-total" min="0" max="42" step="1">
+          <p class="hint">Se calcula solo al rellenar los problemas; puedes corregirlo a mano.</p>
+        </div>
+        <div class="field">
+          <label for="rs-notes">Notas <span class="muted">(opcional)</span></label>
+          <input type="text" id="rs-notes" autocomplete="off">
+        </div>
+      </div>
+    </div>
+    <div class="dialog-foot">
+      <button type="button" class="btn btn-danger" id="btn-delete-result" hidden>Eliminar fila</button>
+      <button type="button" class="btn" data-close>Cancelar</button>
+      <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<datalist id="paises">
+  <option>Argentina</option><option>Bolivia</option><option>Brasil</option>
+  <option>Chile</option><option>Colombia</option><option>Costa Rica</option>
+  <option>Cuba</option><option>Ecuador</option><option>El Salvador</option>
+  <option>España</option><option>Guatemala</option><option>Honduras</option>
+  <option>México</option><option>Nicaragua</option><option>Panamá</option>
+  <option>Paraguay</option><option>Perú</option><option>Portugal</option>
+  <option>Puerto Rico</option><option>República Dominicana</option>
+  <option>Uruguay</option><option>Venezuela</option>
+</datalist>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="assets/js/app.js"></script>
+</body>
+</html>

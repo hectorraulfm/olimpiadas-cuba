@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administración · Cuba en la Ibero</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇨🇺</text></svg>">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="flag">🇨🇺</span>
+      <div>
+        <h1>Administración</h1>
+        <p>Usuarios, invitaciones e historial de cambios</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <a class="btn" href="index.html">← Volver a la tabla</a>
+      <span id="admin-user"></span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div id="denied" hidden class="banner warn">
+    <strong>Acceso restringido.</strong>
+    Esta página es solo para administradores.
+    <a href="index.html">Volver a la tabla</a> y entrar con una cuenta de admin.
+  </div>
+
+  <div id="panel" hidden>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true"  data-tab="users">Usuarios</button>
+      <button role="tab" aria-selected="false" data-tab="invites">Invitaciones</button>
+      <button role="tab" aria-selected="false" data-tab="history">Historial</button>
+    </div>
+
+    <!-- ============ Usuarios ============ -->
+    <section id="tab-users">
+      <p class="intro">
+        Cambia el rol de cada persona registrada.
+        <strong>admin</strong>: todo, incluido gestionar usuarios y borrar ediciones ·
+        <strong>editor</strong>: añadir y modificar datos ·
+        <strong>viewer</strong>: solo lectura.
+      </p>
+      <div class="table-wrap">
+        <table class="plain">
+          <thead>
+            <tr>
+              <th>Nombre</th><th>Correo</th><th>Rol</th><th>Alta</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="users-body">
+            <tr><td colspan="5" class="empty-state">Cargando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ Invitaciones ============ -->
+    <section id="tab-invites" hidden>
+      <p class="intro">
+        Solo puede crear cuenta quien tenga aquí su correo. Tú invitas el correo
+        y le das el rol; la persona elige su propia contraseña al registrarse
+        (nadie, ni tú, ve esa contraseña). Si alguien pierde el acceso, puedes
+        restablecer su contraseña desde el panel de Supabase, en
+        <em>Authentication → Users</em>.
+      </p>
+
+      <form id="form-invite" class="toolbar" style="margin-bottom:18px">
+        <input type="email" id="inv-email" placeholder="correo@ejemplo.com" required style="min-width:260px">
+        <select id="inv-role">
+          <option value="editor">editor</option>
+          <option value="admin">admin</option>
+          <option value="viewer">viewer</option>
+        </select>
+        <input type="text" id="inv-note" placeholder="Nota (opcional)">
+        <button type="submit" class="btn btn-primary">Invitar</button>
+      </form>
+      <p class="form-msg" id="invite-msg"></p>
+
+      <div class="table-wrap">
+        <table class="plain">
+          <thead>
+            <tr>
+              <th>Correo</th><th>Rol</th><th>Nota</th><th>Estado</th><th>Creada</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="invites-body">
+            <tr><td colspan="6" class="empty-state">Cargando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ Historial ============ -->
+    <section id="tab-history" hidden>
+      <p class="intro">
+        Registro automático de cada alta, cambio y borrado de datos, con autor y fecha.
+      </p>
+      <div class="toolbar">
+        <input type="search" id="history-search" placeholder="Filtrar por autor, año o texto…">
+        <select id="history-limit">
+          <option value="100">Últimos 100</option>
+          <option value="300">Últimos 300</option>
+          <option value="1000">Últimos 1000</option>
+        </select>
+        <button class="btn" id="btn-reload-history">Actualizar</button>
+      </div>
+      <div class="table-wrap">
+        <table class="plain">
+          <thead>
+            <tr>
+              <th>Fecha</th><th>Autor</th><th>Acción</th><th>Tabla</th><th>Cambios</th>
+            </tr>
+          </thead>
+          <tbody id="history-body">
+            <tr><td colspan="5" class="empty-state">Cargando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="assets/js/admin.js"></script>
+</body>
+</html>
