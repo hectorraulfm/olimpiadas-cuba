@@ -572,7 +572,16 @@ function wireEvents() {
 async function init() {
   document.title = SITE.title;
   $("site-title").textContent = SITE.title;
+
+  // Se construye con nodos, no con HTML, para que el correo sea un enlace
+  // sin abrir la puerta a inyección desde la configuración.
   $("site-intro").textContent = SITE.intro;
+  if (SITE.contactEmail) {
+    const link = document.createElement("a");
+    link.href = `mailto:${SITE.contactEmail}`;
+    link.textContent = SITE.contactEmail;
+    $("site-intro").append(` ${SITE.contactText} `, link, ".");
+  }
 
   if (!isConfigured) $("setup-banner").hidden = false;
 

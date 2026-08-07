@@ -25,9 +25,12 @@ alter table public.editions disable trigger editions_audit;
 alter table public.results  disable trigger results_audit;
 
 -- 1. Una edición por año.
+--    En 1986 no se celebró olimpiada: la primera fue en 1985 y la segunda en
+--    1987, por eso ese año se excluye.
 insert into public.editions (year)
 select y
   from generate_series(1985, 2025) as y   -- [AÑO FINAL]
+ where y <> 1986
 on conflict (year) do nothing;
 
 -- 2. Cuatro filas de concursante por edición.
@@ -46,6 +49,6 @@ select e.year, s
 alter table public.editions enable trigger editions_audit;
 alter table public.results  enable trigger results_audit;
 
--- 3. Comprobación: debe dar 41 ediciones y 164 filas.
+-- 3. Comprobación: debe dar 40 ediciones y 160 filas.
 select (select count(*) from public.editions) as ediciones,
        (select count(*) from public.results)  as filas;

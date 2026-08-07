@@ -20,5 +20,9 @@ export const SITE = {
   short: "Cuba · Ibero",
   intro:
     "Resultados históricos de la delegación cubana. La tabla se completa entre " +
-    "todos: si tienes datos y permiso de edición, puedes añadirlos.",
+    "todos, así que aún tiene huecos y puede contener errores.",
+
+  // Si lo dejas vacío, no se muestra la invitación a escribir.
+  contactEmail: "hectorraulfm@gmail.com",
+  contactText: "¿Ves algo que corregir o tienes datos que faltan? Escribe a",
 };
