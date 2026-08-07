@@ -285,7 +285,6 @@ table.results tbody.edition + tbody.edition td { border-top: 2px solid var(--bor
 .award-plata   { background: var(--silver-bg); color: var(--silver); }
 .award-bronce  { background: var(--bronze-bg); color: var(--bronze); }
 .award-mencion { background: var(--hm-bg);     color: var(--hm); }
-.award-part    { background: var(--surface-2); color: var(--text-dim); }
 
 .row-actions { white-space: nowrap; text-align: right; }
 

@@ -67,8 +67,9 @@ create table if not exists public.results (
   p5          smallint check (p5 between 0 and 10),
   p6          smallint check (p6 between 0 and 10),
   total       smallint check (total between 0 and 60),
+  -- Sin premio se deja en NULL; en la tabla se muestra como un guion.
   award       text check (award in ('Oro', 'Plata', 'Bronce',
-                                    'Mención de Honor', 'Participación')),
+                                    'Mención de Honor')),
   rank        int,          -- puesto individual (opcional, no se muestra aún)
   notes       text not null default '',
   sort_order  smallint not null default 1,   -- orden de las filas dentro del año

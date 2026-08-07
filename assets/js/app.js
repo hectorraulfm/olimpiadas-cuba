@@ -42,7 +42,6 @@ const AWARD_CLASS = {
   "Plata": "award-plata",
   "Bronce": "award-bronce",
   "Mención de Honor": "award-mencion",
-  "Participación": "award-part",
 };
 
 /** Lee un input numérico devolviendo null cuando está vacío. */
@@ -207,10 +206,10 @@ function textCell(value) {
 function renderStats() {
   const count = (award) => state.results.filter((r) => r.award === award).length;
 
-  // Solo las filas del todo vacías son huecos; si hay nombre o resultado,
-  // cuenta como participación aunque falte el otro dato.
+  // Solo las filas del todo vacías son huecos. Sin premio no significa sin
+  // participación: basta con que haya nombre, medalla o puntuación.
   const named = state.results.filter(
-    (r) => (r.contestant ?? "").trim() !== "" || r.award);
+    (r) => (r.contestant ?? "").trim() !== "" || r.award || r.total != null);
 
   $("s-editions").textContent = state.editions.length;
   $("s-contestants").textContent = named.length;
