@@ -35,6 +35,12 @@ export const COMPETICIONES = [
     nombre: "Olimpiada de Matemática de Centroamérica y el Caribe",
     subtitulo: "Desde 1999 · 3 concursantes por país, 4 desde 2018",
   },
+  {
+    id: "pagmo",
+    tab: "PAGMO",
+    nombre: "Olimpiada Panamericana Femenina de Matemática",
+    subtitulo: "Desde 2021 · 4 concursantes por país",
+  },
 ];
 
 // Título y textos del sitio (cámbialos a tu gusto).
