@@ -93,7 +93,7 @@ En GitHub: **Settings → Pages → Source: Deploy from a branch → `main` / `(
 En un minuto la web estará en:
 
 ```
-https://hectorraulfm.github.io/ibero-cuba/
+https://hectorraulfm.github.io/olimpiadas-cuba/
 ```
 
 ### 6. Crear tu cuenta
@@ -162,7 +162,7 @@ alterar ese registro desde la web.
 ## Estructura
 
 ```
-ibero-cuba/
+olimpiadas-cuba/
 ├── index.html              Tabla pública + edición
 ├── admin.html              Panel de administración
 ├── assets/
