@@ -14,6 +14,8 @@
 --    · "Ián" pasa a "Ian"
 --    · "Salvó" pasa a "Salvo"
 --    · "Noslėn", escrito con una letra lituana, pasa a "Noslen"
+--    · "Reydel Pérez Pastó" pasa a "Reidel", la grafía de la Iberoamericana
+--    · "Aldo Rodríguez Gonzales" pasa a "González"
 --
 --  Cómo usarlo:
 --    Supabase → SQL Editor → New query → pega todo → Run
@@ -28,7 +30,7 @@ with correcciones(viejo, nuevo) as (
   values
     ('Alberto Ochoa Rodriguez', 'Alberto Ochoa Rodríguez'),
     ('Aldo Rodriguez', 'Aldo Rodríguez'),
-    ('Aldo Rodriguez Gonzales', 'Aldo Rodríguez Gonzales'),
+    ('Aldo Rodriguez Gonzales', 'Aldo Rodríguez González'),
     ('Alexander Alvarez Hernandez', 'Alexander Álvarez Hernández'),
     ('Alfredo Herrera Hérnandez', 'Alfredo Herrera Hernández'),
     ('Alvaro Javier Fuentes Suárez', 'Álvaro Javier Fuentes Suárez'),
@@ -77,7 +79,8 @@ with correcciones(viejo, nuevo) as (
     ('Raul Perez', 'Raúl Pérez'),
     ('René Dager Salomon', 'René Dager Salomón'),
     ('Rene Guerra Millet', 'René Guerra Millet'),
-    ('Reydel Pérez Pasto', 'Reydel Pérez Pastó'),
+    ('Reydel Pérez Pasto', 'Reidel Pérez Pastó'),
+    ('Reydel Pérez Pastó', 'Reidel Pérez Pastó'),
     ('Ricardo Gomez', 'Ricardo Gómez'),
     ('Ricardo Gonzalez Felipe', 'Ricardo González Felipe'),
     ('Ricardo Miguel Molano Dominguez', 'Ricardo Miguel Molano Domínguez'),
