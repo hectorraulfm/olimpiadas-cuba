@@ -1,5 +1,5 @@
 -- ============================================================================
---  PAGMO: Amalia García Suáres, líder en todas las ediciones
+--  PAGMO: Amalia García Suárez, líder en todas las ediciones
 --  Fuente: dato aportado el 13 de agosto de 2026.
 -- ----------------------------------------------------------------------------
 --  Se aplica a las cinco ediciones, de 2021 a 2025.
@@ -17,7 +17,7 @@
 alter table public.editions disable trigger editions_audit;
 
 update public.editions
-   set leader = 'Amalia García Suáres'
+   set leader = 'Amalia García Suárez'
  where competition = 'pagmo';
 
 alter table public.editions enable trigger editions_audit;
@@ -27,6 +27,6 @@ alter table public.editions enable trigger editions_audit;
 -- ----------------------------------------------------------------------------
 
 select count(*)                                                as ediciones,
-       count(*) filter (where leader = 'Amalia García Suáres') as con_amalia
+       count(*) filter (where leader = 'Amalia García Suárez') as con_amalia
   from public.editions
  where competition = 'pagmo';
