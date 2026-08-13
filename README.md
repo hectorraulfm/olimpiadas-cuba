@@ -3,15 +3,16 @@
 Web colaborativa con los resultados históricos de la delegación cubana, al
 estilo de las tablas por país de [imo-official.org](https://www.imo-official.org/results/individual/country/CUB/).
 
-Cubre dos competiciones, en pestañas:
+Cubre tres competiciones, en pestañas:
 
-| Competición | Desde | Concursantes por país |
-|---|---|---|
-| **Iberoamericana** | 1985 (no hubo edición en 1986) | 4 |
-| **Centroamericana y del Caribe** | 1999 | 3 hasta 2017, 4 desde 2018 |
+| Competición | Cuba desde | Concursantes por país | Fuente |
+|---|---|---|---|
+| **IMO** (Internacional) | 1971 | 6 (7 en 1974, 8 en 1981) | [imo-official.org](https://www.imo-official.org/results/individual/country/CUB/), oficial |
+| **Iberoamericana** | 1985 (no hubo edición en 1986) | 4 | Varias, no oficiales |
+| **Centroamericana y del Caribe** | 1999 | 3 hasta 2017, 4 desde 2018 | Aportaciones personales |
 
-Se puede enlazar directamente a una de ellas añadiendo `#ibero` o `#centro` al
-final de la dirección.
+Se puede enlazar directamente a una de ellas añadiendo `#imo`, `#ibero` o
+`#centro` al final de la dirección.
 
 **Columnas:** año · país organizador · concursante (varias filas por año) ·
 resultado · puntos · P1–P6 · líder · colíder.
@@ -175,7 +176,9 @@ ibero-cuba/
 │   ├── seed-ediciones.sql  Esqueleto ibero: 1985–2025, 4 filas por año
 │   ├── import-2026-08.sql  Sedes 1987–2024 y 53 concursantes cubanos
 │   ├── import-doc-nelson.sql        Líderes y 28 concursantes más
-│   └── migracion-centroamericana.sql  Segunda competición y su esqueleto
+│   ├── migracion-centroamericana.sql  Segunda competición y su esqueleto
+│   ├── import-centro-whatsapp.sql     34 concursantes centroamericanos
+│   └── migracion-imo.sql              Tercera competición y sus 185 filas
 └── dev-server.ps1          Servidor local para pruebas (Windows)
 ```
 

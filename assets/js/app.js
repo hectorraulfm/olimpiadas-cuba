@@ -180,6 +180,17 @@ async function loadData() {
 
   state.editions = editions.data ?? [];
   state.results = results.data ?? [];
+
+  // Si la pestaña por defecto todavía no tiene datos —por ejemplo una
+  // competición recién añadida cuyo SQL aún no se ha ejecutado— se abre la
+  // primera que sí los tenga. Si el visitante pidió una concreta por la URL,
+  // se respeta su elección.
+  if (!location.hash && !edicionesVisibles().length) {
+    const conDatos = COMPETICIONES.find((c) =>
+      state.editions.some((e) => compDe(e) === c.id));
+    if (conDatos) state.competition = conDatos.id;
+  }
+
   render();
 }
 

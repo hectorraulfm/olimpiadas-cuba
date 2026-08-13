@@ -18,6 +18,12 @@ export const SUPABASE_ANON_KEY = "sb_publishable__cxlKRM1XiUjJ3DO5Pd03g_CQrwDo7T
 // La clave ('ibero', 'centro') es la que se guarda en la base de datos.
 export const COMPETICIONES = [
   {
+    id: "imo",
+    tab: "IMO",
+    nombre: "Olimpiada Internacional de Matemática",
+    subtitulo: "Cuba desde 1971 · 6 concursantes por país",
+  },
+  {
     id: "ibero",
     tab: "Iberoamericana",
     nombre: "Olimpiada Iberoamericana de Matemática",
