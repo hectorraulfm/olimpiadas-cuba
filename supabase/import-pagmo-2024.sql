@@ -19,7 +19,7 @@ alter table public.results disable trigger results_audit;
 
 with datos(orden, nombre, premio) as (
   values
-    (1, 'Heidy de la Caridad Rodríguez Fuentes', 'Bronce'),
+    (1, 'Heidy Rodríguez Fuentes',              'Bronce'),
     (2, 'Liss Marian Estevez Suárez',            'Bronce'),
     (3, 'Salet Margginna Cox Martínez',          'Mención de Honor'),
     (4, 'Isabel Liz Gonzales Cárdenas',          null)
