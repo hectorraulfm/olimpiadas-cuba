@@ -14,10 +14,27 @@
 export const SUPABASE_URL = "https://wtvibkumesmopmauntnt.supabase.co";
 export const SUPABASE_ANON_KEY = "sb_publishable__cxlKRM1XiUjJ3DO5Pd03g_CQrwDo7T";
 
+// Las dos competiciones. El orden es el de las pestañas.
+// La clave ('ibero', 'centro') es la que se guarda en la base de datos.
+export const COMPETICIONES = [
+  {
+    id: "ibero",
+    tab: "Iberoamericana",
+    nombre: "Olimpiada Iberoamericana de Matemática",
+    subtitulo: "Desde 1985 · 4 concursantes por país",
+  },
+  {
+    id: "centro",
+    tab: "Centroamericana",
+    nombre: "Olimpiada de Matemática de Centroamérica y el Caribe",
+    subtitulo: "Desde 1999 · 3 concursantes por país, 4 desde 2018",
+  },
+];
+
 // Título y textos del sitio (cámbialos a tu gusto).
 export const SITE = {
-  title: "Cuba en la Olimpiada Iberoamericana de Matemática",
-  short: "Cuba · Ibero",
+  title: "Cuba en las Olimpiadas de Matemática",
+  short: "Cuba · Olimpiadas",
   intro:
     "Resultados históricos de la delegación cubana. La tabla se completa entre " +
     "todos, así que aún tiene huecos y puede contener errores.",

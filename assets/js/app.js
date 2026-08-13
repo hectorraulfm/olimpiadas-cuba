@@ -1,6 +1,6 @@
 import { supabase, isConfigured, getSessionAndProfile, humanError }
   from "./supabase-client.js";
-import { SITE } from "./config.js";
+import { SITE, COMPETICIONES } from "./config.js";
 
 // ---------------------------------------------------------------------------
 // Estado
@@ -11,7 +11,25 @@ const state = {
   results: [],
   profile: null,
   session: null,
+  // Competición visible. Se guarda en el hash de la URL para poder enlazarla.
+  competition: COMPETICIONES[0].id,
 };
+
+const compActual = () =>
+  COMPETICIONES.find((c) => c.id === state.competition) ?? COMPETICIONES[0];
+
+/**
+ * Competición de una fila. Si la base de datos todavía no tiene la columna
+ * —porque la migración no se ha ejecutado— se asume la Iberoamericana, que era
+ * lo único que existía antes.
+ */
+const compDe = (fila) => fila.competition ?? "ibero";
+
+/** Filas de la competición visible. */
+const edicionesVisibles = () =>
+  state.editions.filter((e) => compDe(e) === state.competition);
+const resultadosVisibles = () =>
+  state.results.filter((r) => compDe(r) === state.competition);
 
 const $ = (id) => document.getElementById(id);
 const canEdit = () => ["admin", "editor"].includes(state.profile?.role);
@@ -172,12 +190,12 @@ async function loadData() {
 /** Ediciones de más reciente a más antigua, cada una con sus concursantes. */
 function orderedGroups() {
   const byYear = new Map();
-  for (const row of state.results) {
+  for (const row of resultadosVisibles()) {
     if (!byYear.has(row.year)) byYear.set(row.year, []);
     byYear.get(row.year).push(row);
   }
 
-  return [...state.editions]
+  return [...edicionesVisibles()]
     .sort((a, b) => b.year - a.year)
     .map((edition) => ({
       edition,
@@ -203,28 +221,52 @@ function textCell(value) {
   return text ? esc(text) : `<span class="empty-cell">—</span>`;
 }
 
+/** Una fila cuenta como participación si tiene nombre, medalla o puntuación. */
+const tieneDato = (r) =>
+  (r.contestant ?? "").trim() !== "" || Boolean(r.award) || r.total != null;
+
 function renderStats() {
-  const count = (award) => state.results.filter((r) => r.award === award).length;
+  const filas = resultadosVisibles();
+  const count = (award) => filas.filter((r) => r.award === award).length;
+  const named = filas.filter(tieneDato);
 
-  // Solo las filas del todo vacías son huecos. Sin premio no significa sin
-  // participación: basta con que haya nombre, medalla o puntuación.
-  const named = state.results.filter(
-    (r) => (r.contestant ?? "").trim() !== "" || r.award || r.total != null);
-
-  $("s-editions").textContent = state.editions.length;
+  $("s-editions").textContent = edicionesVisibles().length;
   $("s-contestants").textContent = named.length;
-  $("s-todo").textContent = state.results.length - named.length;
+  $("s-todo").textContent = filas.length - named.length;
   $("s-gold").textContent = count("Oro");
   $("s-silver").textContent = count("Plata");
   $("s-bronze").textContent = count("Bronce");
   $("s-hm").textContent = count("Mención de Honor");
-  $("stats").hidden = state.editions.length === 0;
+  $("stats").hidden = edicionesVisibles().length === 0;
+}
+
+/** Pinta las pestañas y marca la activa. */
+function renderTabs() {
+  const nav = $("comp-tabs");
+  nav.innerHTML = COMPETICIONES.map((c) => {
+    const n = state.results.filter(
+      (r) => compDe(r) === c.id && tieneDato(r)).length;
+    return `<button role="tab" data-comp="${c.id}"
+              aria-selected="${c.id === state.competition}">${esc(c.tab)}${
+      n ? `<span class="count">${n}</span>` : ""}</button>`;
+  }).join("");
+
+  $("site-subtitle").textContent = compActual().subtitulo;
+}
+
+function setCompetition(id, { push = true } = {}) {
+  if (!COMPETICIONES.some((c) => c.id === id)) return;
+  state.competition = id;
+  if (push && location.hash.slice(1) !== id) location.hash = id;
+  render();
 }
 
 function render() {
   const editing = canEdit();
   const table = document.querySelector("table.results");
   const colCount = editing ? 14 : 13;
+
+  renderTabs();
 
   // Crear y editar ediciones es cosa del admin; los editores solo rellenan
   // concursantes y puntos.
@@ -241,6 +283,8 @@ function render() {
     let message;
     if (!isConfigured) {
       message = "Configura Supabase para ver los datos.";
+    } else if (state.editions.length && !edicionesVisibles().length) {
+      message = `Todavía no hay ediciones de la ${compActual().tab}.`;
     } else if (isAdmin()) {
       message = "Todavía no hay ediciones. Empieza con «+ Nueva edición».";
     } else {
@@ -323,10 +367,12 @@ let editingYear = null; // null = crear
 function openEditionDialog(year) {
   editingYear = year;
   const edition = year !== null
-    ? state.editions.find((e) => e.year === year)
+    ? edicionesVisibles().find((e) => e.year === year)
     : null;
 
-  $("edition-title").textContent = edition ? `Edición ${edition.year}` : "Nueva edición";
+  $("edition-title").textContent = edition
+    ? `${compActual().tab} ${edition.year}`
+    : `Nueva edición · ${compActual().tab}`;
   $("ed-year").value = edition?.year ?? "";
   $("ed-year").disabled = Boolean(edition);
   $("ed-country").value = edition?.host_country ?? "";
@@ -357,9 +403,12 @@ async function saveEdition(event) {
   let error;
   if (editingYear === null) {
     payload.year = Number($("ed-year").value);
+    payload.competition = state.competition;
     ({ error } = await supabase.from("editions").insert(payload));
   } else {
-    ({ error } = await supabase.from("editions").update(payload).eq("year", editingYear));
+    ({ error } = await supabase.from("editions").update(payload)
+      .eq("year", editingYear)
+      .eq("competition", state.competition));
   }
 
   if (error) {
@@ -375,13 +424,15 @@ async function saveEdition(event) {
 
 async function deleteEdition() {
   if (editingYear === null) return;
-  const rows = state.results.filter((r) => r.year === editingYear).length;
+  const rows = resultadosVisibles().filter((r) => r.year === editingYear).length;
   const warning = rows
     ? `\n\nSe borrarán también sus ${rows} fila(s) de concursantes.`
     : "";
-  if (!confirm(`¿Eliminar la edición ${editingYear}?${warning}\n\nEsta acción queda registrada en el historial.`)) return;
+  if (!confirm(`¿Eliminar la edición ${editingYear} de la ${compActual().tab}?${warning}\n\nEsta acción queda registrada en el historial.`)) return;
 
-  const { error } = await supabase.from("editions").delete().eq("year", editingYear);
+  const { error } = await supabase.from("editions").delete()
+    .eq("year", editingYear)
+    .eq("competition", state.competition);
   if (error) {
     $("edition-msg").textContent = humanError(error);
     $("edition-msg").className = "form-msg error";
@@ -447,9 +498,12 @@ async function saveResult(event) {
   if (editingResult.id) {
     ({ error } = await supabase.from("results").update(payload).eq("id", editingResult.id));
   } else {
-    const used = state.results.filter((r) => r.year === editingResult.year).length;
+    const hermanas = resultadosVisibles()
+      .filter((r) => r.year === editingResult.year);
     payload.year = editingResult.year;
-    payload.sort_order = used + 1;
+    payload.competition = state.competition;
+    payload.sort_order =
+      hermanas.reduce((max, r) => Math.max(max, r.sort_order ?? 0), 0) + 1;
     ({ error } = await supabase.from("results").insert(payload));
   }
 
@@ -513,7 +567,7 @@ function exportCsv() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "cuba-iberoamericana.csv";
+  a.download = `cuba-${state.competition === "centro" ? "centroamericana" : "iberoamericana"}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -553,6 +607,17 @@ function wireEvents() {
   $("btn-new-edition").onclick = () => openEditionDialog(null);
   $("btn-export").onclick = exportCsv;
 
+  $("comp-tabs").addEventListener("click", (event) => {
+    const tab = event.target.closest("[data-comp]");
+    if (tab) setCompetition(tab.dataset.comp);
+  });
+
+  // Atrás y adelante del navegador cambian de pestaña.
+  window.addEventListener("hashchange", () => {
+    const id = location.hash.slice(1);
+    if (id && id !== state.competition) setCompetition(id, { push: false });
+  });
+
   // Delegación de clics dentro de la tabla.
   document.querySelector("table.results").addEventListener("click", (event) => {
     const target = event.target.closest("[data-edit-edition], [data-add-result], [data-edit-result]");
@@ -572,6 +637,10 @@ function wireEvents() {
 async function init() {
   document.title = SITE.title;
   $("site-title").textContent = SITE.title;
+
+  // Permite enlazar directamente una competición: .../#centro
+  const desdeUrl = location.hash.slice(1);
+  if (COMPETICIONES.some((c) => c.id === desdeUrl)) state.competition = desdeUrl;
 
   // Se construye con nodos, no con HTML, para que el correo sea un enlace
   // sin abrir la puerta a inyección desde la configuración.

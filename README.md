@@ -1,7 +1,17 @@
-# Cuba en la Olimpiada Iberoamericana de Matemática
+# Cuba en las Olimpiadas de Matemática
 
 Web colaborativa con los resultados históricos de la delegación cubana, al
 estilo de las tablas por país de [imo-official.org](https://www.imo-official.org/results/individual/country/CUB/).
+
+Cubre dos competiciones, en pestañas:
+
+| Competición | Desde | Concursantes por país |
+|---|---|---|
+| **Iberoamericana** | 1985 (no hubo edición en 1986) | 4 |
+| **Centroamericana y del Caribe** | 1999 | 3 hasta 2017, 4 desde 2018 |
+
+Se puede enlazar directamente a una de ellas añadiendo `#ibero` o `#centro` al
+final de la dirección.
 
 **Columnas:** año · país organizador · concursante (varias filas por año) ·
 resultado · puntos · P1–P6 · líder · colíder.
@@ -162,8 +172,10 @@ ibero-cuba/
 │       └── admin.js           Usuarios, invitaciones, historial
 ├── supabase/
 │   ├── schema.sql          Tablas, roles, RLS, triggers e historial
-│   ├── seed-ediciones.sql  Esqueleto: 1985–2025, 4 filas por año
-│   └── import-2026-08.sql  Sedes 1987–2024 y 53 concursantes cubanos
+│   ├── seed-ediciones.sql  Esqueleto ibero: 1985–2025, 4 filas por año
+│   ├── import-2026-08.sql  Sedes 1987–2024 y 53 concursantes cubanos
+│   ├── import-doc-nelson.sql        Líderes y 28 concursantes más
+│   └── migracion-centroamericana.sql  Segunda competición y su esqueleto
 └── dev-server.ps1          Servidor local para pruebas (Windows)
 ```
 
