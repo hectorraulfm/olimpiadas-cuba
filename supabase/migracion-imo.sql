@@ -7,9 +7,10 @@
 --  problema, total, medalla y puesto.
 --
 --  Se crean ediciones para TODOS los años de 1971 a 2026, con 6 plazas cada
---  uno, aunque Cuba no asistiera. Dos excepciones: 1974 tuvo 7 concursantes y
---  1981 tuvo 8, porque los equipos de la IMO eran mayores entonces; esos años
---  llevan las plazas que hicieron falta para no perder datos reales.
+--  uno, aunque Cuba no asistiera. Tres excepciones: 1974 tuvo 7 concursantes y
+--  1981 tuvo 8, porque los equipos de la IMO eran mayores entonces, así que
+--  esos años llevan las plazas que hicieron falta para no perder datos reales;
+--  y en 1980 no hubo IMO, de modo que ese año no se crea.
 --
 --  La fuente no publica líderes ni colíderes en esta tabla.
 --
@@ -43,9 +44,12 @@ alter table public.results  disable trigger results_audit;
 -- 2. Esqueleto: 1971 a 2026, seis plazas por año
 -- ----------------------------------------------------------------------------
 
+-- En 1980 no se celebró la IMO: la edición se canceló, así que ese año se
+-- excluye.
 insert into public.editions (competition, year)
 select 'imo', y
   from generate_series(1971, 2026) as y   -- [AÑO FINAL]
+ where y <> 1980
 on conflict (competition, year) do nothing;
 
 insert into public.results (competition, year, sort_order)
@@ -67,7 +71,7 @@ select 'imo', e.year, s
 -- 3. Concursantes
 --    Ordenados dentro de cada año de mayor a menor puntuación.
 --    Los años sin filas aquí son aquellos en que Cuba no participó:
---    1975, 1980, 2006, 2011, 2016, 2018, 2020 y 2021.
+--    1975, 2006, 2011, 2016, 2018, 2020 y 2021. (En 1980 no hubo IMO.)
 -- ----------------------------------------------------------------------------
 
 with datos(anyo, orden, nombre, a1, a2, a3, a4, a5, a6, puntos, premio, puesto) as (
@@ -283,7 +287,7 @@ alter table public.results  enable trigger results_audit;
 
 -- ----------------------------------------------------------------------------
 -- 4. Comprobación
---    Esperado: 56 ediciones, 339 filas, 185 con datos,
+--    Esperado: 55 ediciones, 333 filas, 185 con datos,
 --              1 oro, 7 plata, 41 bronce, 35 mención.
 -- ----------------------------------------------------------------------------
 
