@@ -1,10 +1,16 @@
 -- ============================================================================
---  Da acceso de administrador a iandavidlorenzogarcia02@gmail.com
+--  Da acceso de editor a iandavidlorenzogarcia02@gmail.com
 -- ----------------------------------------------------------------------------
+--  Con rol 'editor' podrá añadir, modificar y borrar filas de concursantes:
+--  nombre, resultado, puntos por problema y total, en las cuatro competiciones.
+--
+--  No podrá tocar los datos de la edición en sí —año, país, sede, líder y
+--  colíder— ni borrar una edición entera. Eso sigue reservado al admin.
+--
 --  Cubre los dos casos posibles:
---    · Si aún no tiene cuenta, se crea la invitación con rol admin. Al
---      registrarse en la web con ese correo quedará como administrador.
---    · Si ya se había registrado antes, se le sube el rol a admin.
+--    · Si aún no tiene cuenta, se crea la invitación. Al registrarse en la web
+--      con ese correo quedará como editor.
+--    · Si ya se había registrado antes, se le fija el rol de editor.
 --
 --  Cómo usarlo:
 --    Supabase → SQL Editor → New query → pega todo → Run
@@ -13,15 +19,15 @@
 -- ============================================================================
 
 insert into public.invitations (email, role, note)
-values ('iandavidlorenzogarcia02@gmail.com', 'admin', 'Ian David Lorenzo García')
+values ('iandavidlorenzogarcia02@gmail.com', 'editor', 'Ian David Lorenzo García')
 on conflict (email) do update
-   set role    = 'admin',
+   set role    = 'editor',
        used_at = null,
        note    = 'Ian David Lorenzo García';
 
 -- Por si ya tenía cuenta creada con otro rol.
 update public.profiles
-   set role = 'admin'
+   set role = 'editor'
  where lower(email) = 'iandavidlorenzogarcia02@gmail.com';
 
 -- ----------------------------------------------------------------------------
@@ -32,7 +38,7 @@ update public.profiles
 
 select (select count(*) from public.invitations
          where lower(email) = 'iandavidlorenzogarcia02@gmail.com'
-           and role = 'admin')                        as invitacion,
+           and role = 'editor')                       as invitacion,
        (select count(*) from public.profiles
          where lower(email) = 'iandavidlorenzogarcia02@gmail.com'
-           and role = 'admin')                        as perfil;
+           and role = 'editor')                       as perfil;
