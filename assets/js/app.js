@@ -279,8 +279,8 @@ function render() {
 
   renderTabs();
 
-  // Crear y editar ediciones es cosa del admin; los editores solo rellenan
-  // concursantes y puntos.
+  // Crear y borrar ediciones es cosa del admin. Editarlas —país, sede,
+  // líder, colíder— lo puede hacer cualquier editor.
   $("th-actions").hidden = !editing;
   $("btn-new-edition").hidden = !isAdmin();
 
@@ -314,8 +314,8 @@ function render() {
 
     const groupControls = editing ? `
       <div class="group-actions">
-        ${isAdmin() ? `<button class="btn-icon" data-edit-edition="${edition.year}"
-                title="Editar edición ${edition.year}">✎</button>` : ""}
+        <button class="btn-icon" data-edit-edition="${edition.year}"
+                title="Editar edición ${edition.year}">✎</button>
         <button class="btn-icon" data-add-result="${edition.year}"
                 title="Añadir concursante a ${edition.year}">+</button>
       </div>` : "";
