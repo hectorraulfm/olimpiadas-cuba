@@ -20,7 +20,8 @@
 with gente(correo, nombre) as (
   values
     ('iandavidlorenzogarcia02@gmail.com', 'Ian David Lorenzo García'),
-    ('damiamfuentes11@gmail.com',         'Damiam David Fuentes Campos')
+    ('damiamfuentes11@gmail.com',         'Damiam David Fuentes Campos'),
+    ('dariopalmeroledon@gmail.com',       'Darío Palmero Ledón')
 )
 insert into public.invitations (email, role, note)
 select correo, 'editor', nombre from gente
@@ -33,19 +34,22 @@ on conflict (email) do update
 update public.profiles
    set role = 'editor'
  where lower(email) in ('iandavidlorenzogarcia02@gmail.com',
-                        'damiamfuentes11@gmail.com');
+                        'damiamfuentes11@gmail.com',
+                        'dariopalmeroledon@gmail.com');
 
 -- ----------------------------------------------------------------------------
 --  Comprobación.
---  invitaciones = 2 siempre.
---  perfiles     = cuántos de los dos se han registrado ya.
+--  invitaciones = 3 siempre.
+--  perfiles     = cuántos de los tres se han registrado ya.
 -- ----------------------------------------------------------------------------
 
 select (select count(*) from public.invitations
-         where lower(email) in ('iandavidlorenzogarcia02@gmail.com',
-                                'damiamfuentes11@gmail.com')
-           and role = 'editor')                       as invitaciones,
+         where role = 'editor'
+           and lower(email) in ('iandavidlorenzogarcia02@gmail.com',
+                                'damiamfuentes11@gmail.com',
+                                'dariopalmeroledon@gmail.com'))  as invitaciones,
        (select count(*) from public.profiles
-         where lower(email) in ('iandavidlorenzogarcia02@gmail.com',
-                                'damiamfuentes11@gmail.com')
-           and role = 'editor')                       as perfiles;
+         where role = 'editor'
+           and lower(email) in ('iandavidlorenzogarcia02@gmail.com',
+                                'damiamfuentes11@gmail.com',
+                                'dariopalmeroledon@gmail.com'))  as perfiles;
