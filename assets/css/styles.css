@@ -326,6 +326,41 @@ table.results tbody.edition + tbody.edition td { border-top: 2px solid var(--bor
 
 .row-actions { white-space: nowrap; text-align: right; }
 
+/* Nombre de concursante, que abre su ficha */
+.persona {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-underline-offset: 3px;
+}
+.persona:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+/* ---------- Ficha de concursante ---------- */
+
+#dlg-person { width: min(920px, calc(100vw - 32px)); }
+#dlg-person .table-wrap { box-shadow: none; }
+#dlg-person table.plain { min-width: 720px; }
+#dlg-person .dialog-body { max-height: 70vh; overflow-y: auto; }
+
+.comp-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  white-space: nowrap;
+}
+
 .empty-state {
   padding: 48px 24px;
   text-align: center;

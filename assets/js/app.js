@@ -354,7 +354,10 @@ function render() {
       }
 
       if (row) {
-        cells.push(`<td>${textCell(row.contestant)}</td>`);
+        const nombre = (row.contestant ?? "").trim();
+        cells.push(`<td>${nombre
+          ? `<button class="persona" data-person="${esc(nombre)}">${esc(nombre)}</button>`
+          : `<span class="empty-cell">—</span>`}</td>`);
         cells.push(`<td>${awardCell(row.award)}</td>`);
         cells.push(`<td class="num total">${row.total ?? `<span class="empty-cell">·</span>`}</td>`);
         for (const key of ["p1", "p2", "p3", "p4", "p5", "p6"]) {
@@ -383,6 +386,77 @@ function render() {
   }
 
   renderStats();
+}
+
+// ---------------------------------------------------------------------------
+// Ficha de concursante
+// ---------------------------------------------------------------------------
+
+/** Todas las participaciones de una persona, de la más reciente a la más antigua. */
+function historial(nombre) {
+  return state.results
+    .filter((r) => (r.contestant ?? "").trim() === nombre)
+    .map((r) => ({
+      fila: r,
+      comp: COMPETICIONES.find((c) => c.id === compDe(r)),
+      edicion: state.editions.find(
+        (e) => compDe(e) === compDe(r) && e.year === r.year),
+    }))
+    .sort((a, b) => b.fila.year - a.fila.year);
+}
+
+function openPersonDialog(nombre) {
+  const items = historial(nombre);
+  if (!items.length) return;
+
+  $("person-title").textContent = nombre;
+
+  const medallas = ["Oro", "Plata", "Bronce", "Mención de Honor"]
+    .map((m) => [m, items.filter((i) => i.fila.award === m).length])
+    .filter(([, n]) => n > 0)
+    .map(([m, n]) => `${n} ${m.toLowerCase()}`);
+
+  // "a, b y c"
+  const enumera = (xs) => xs.length < 2
+    ? (xs[0] ?? "")
+    : `${xs.slice(0, -1).join(", ")} y ${xs[xs.length - 1]}`;
+
+  const comps = [...new Set(items.map((i) => i.comp?.tab).filter(Boolean))];
+  $("person-summary").textContent =
+    `${items.length} ${items.length === 1 ? "participación" : "participaciones"}` +
+    ` en ${enumera(comps)}` +
+    (medallas.length ? ` · ${enumera(medallas)}` : " · sin medallas");
+
+  const sede = (e) => {
+    if (!e) return `<span class="empty-cell">—</span>`;
+    const partes = [e.host_country, e.host_city].map((s) => (s ?? "").trim());
+    const texto = partes.filter(Boolean).join(", ");
+    return texto ? esc(texto) : `<span class="empty-cell">—</span>`;
+  };
+
+  $("person-table").innerHTML = `
+    <thead>
+      <tr>
+        <th>Competición</th><th>Año</th><th>Sede</th><th>Resultado</th>
+        <th class="num">Puntos</th>
+        <th class="num">P1</th><th class="num">P2</th><th class="num">P3</th>
+        <th class="num">P4</th><th class="num">P5</th><th class="num">P6</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${items.map(({ fila, comp, edicion }) => `
+        <tr>
+          <td><span class="comp-tag">${esc(comp?.tab ?? "")}</span></td>
+          <td><strong>${fila.year}</strong></td>
+          <td>${sede(edicion)}</td>
+          <td>${awardCell(fila.award)}</td>
+          <td class="num total">${fila.total ?? `<span class="empty-cell">·</span>`}</td>
+          ${["p1", "p2", "p3", "p4", "p5", "p6"]
+            .map((k) => `<td class="num">${pointCell(fila[k])}</td>`).join("")}
+        </tr>`).join("")}
+    </tbody>`;
+
+  openDialog($("dlg-person"));
 }
 
 // ---------------------------------------------------------------------------
@@ -650,6 +724,9 @@ function wireEvents() {
 
   // Delegación de clics dentro de la tabla.
   document.querySelector("table.results").addEventListener("click", (event) => {
+    const persona = event.target.closest("[data-person]");
+    if (persona) { openPersonDialog(persona.dataset.person); return; }
+
     const target = event.target.closest("[data-edit-edition], [data-add-result], [data-edit-result]");
     if (!target) return;
     if (target.dataset.editEdition) {
