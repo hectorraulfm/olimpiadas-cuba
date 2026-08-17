@@ -232,6 +232,22 @@ function textCell(value) {
   return text ? esc(text) : `<span class="empty-cell">—</span>`;
 }
 
+/** Separa en líneas los campos que admiten varias personas, como el colíder. */
+function lineas(value) {
+  return String(value ?? "")
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/** Celda de una lista de personas: una por línea. */
+function listCell(value) {
+  const partes = lineas(value);
+  return partes.length
+    ? partes.map(esc).join("<br>")
+    : `<span class="empty-cell">—</span>`;
+}
+
 /** Una fila cuenta como participación si tiene nombre, medalla o puntuación. */
 const tieneDato = (r) =>
   (r.contestant ?? "").trim() !== "" || Boolean(r.award) || r.total != null;
@@ -349,8 +365,8 @@ function render() {
       }
 
       if (index === 0) {
-        cells.push(`<td class="group-left" rowspan="${span}">${textCell(edition.leader)}</td>`);
-        cells.push(`<td rowspan="${span}">${textCell(edition.deputy_leader)}</td>`);
+        cells.push(`<td class="group-left" rowspan="${span}">${listCell(edition.leader)}</td>`);
+        cells.push(`<td rowspan="${span}">${listCell(edition.deputy_leader)}</td>`);
       }
 
       if (editing) {
@@ -407,7 +423,8 @@ async function saveEdition(event) {
     host_country: $("ed-country").value.trim(),
     host_city: $("ed-city").value.trim(),
     leader: $("ed-leader").value.trim(),
-    deputy_leader: $("ed-deputy").value.trim(),
+    // Puede llevar varios nombres, uno por línea: se limpian los huecos.
+    deputy_leader: lineas($("ed-deputy").value).join("\n"),
     notes: $("ed-notes").value.trim(),
   };
 
@@ -555,7 +572,9 @@ function exportCsv() {
 
   for (const { edition, rows } of orderedGroups()) {
     const base = [edition.year, edition.host_country, edition.host_city];
-    const tail = [edition.leader, edition.deputy_leader];
+    // En el CSV los varios colíderes van en una celda, separados por punto y coma.
+    const tail = [lineas(edition.leader).join("; "),
+                  lineas(edition.deputy_leader).join("; ")];
     if (!rows.length) {
       lines.push([...base, "", "", "", "", "", "", "", "", "", ...tail]);
       continue;
