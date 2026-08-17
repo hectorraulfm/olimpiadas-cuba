@@ -355,9 +355,11 @@ function render() {
 
       if (row) {
         const nombre = (row.contestant ?? "").trim();
-        cells.push(`<td>${nombre
-          ? `<button class="persona" data-person="${esc(nombre)}">${esc(nombre)}</button>`
-          : `<span class="empty-cell">—</span>`}</td>`);
+        cells.push(nombre
+          ? `<td class="persona-cell"><button class="persona" data-person="${
+              esc(nombre)}" title="Ver todas las participaciones de ${
+              esc(nombre)}">${esc(nombre)}</button></td>`
+          : `<td><span class="empty-cell">—</span></td>`);
         cells.push(`<td>${awardCell(row.award)}</td>`);
         cells.push(`<td class="num total">${row.total ?? `<span class="empty-cell">·</span>`}</td>`);
         for (const key of ["p1", "p2", "p3", "p4", "p5", "p6"]) {
